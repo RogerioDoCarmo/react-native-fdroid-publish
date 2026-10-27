@@ -34,7 +34,7 @@ jobs:
       TAG: ${{ github.event.inputs.tag || github.event.release.tag_name }}
     steps:
       - name: Checkout source at release tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.TAG }}
           path: source
@@ -45,7 +45,7 @@ jobs:
           package_json_file: source/package.json
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: source/.nvmrc
 
@@ -131,7 +131,7 @@ jobs:
             "${{ steps.version.outputs.code }}" "${{ steps.version.outputs.name }}"
 
       - name: Checkout the mirror repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: <owner>/<app>-android
           token: ${{ secrets.<APP>_ANDROID_TOKEN }}
