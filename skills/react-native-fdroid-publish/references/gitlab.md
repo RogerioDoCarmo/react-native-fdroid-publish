@@ -54,13 +54,27 @@ Only the default branch (`master`) is forked: much faster, and nothing else is n
 from it runs today's CI against old files and old lint rules. Sync it first (GitLab's **Update
 fork** button, or the GraphQL `projectSyncFork` mutation) or make a new fork.
 
+## Before any text goes out
+
+Every RFP and merge request starts from F-Droid's **live** template, fetched at that moment. Each
+body is checked, then shown to the owner:
+
+```bash
+node glab-fdroid.mjs template rfp rfp.md        # or: template mr merge-request.md
+node glab-fdroid.mjs check rfp rfp.md           # or: check mr ... / check text comment.md
+```
+
+`check` reports every line of the live template the body dropped, and any other store the text
+names. Every posting command runs the same check and refuses to post until it passes
+(`writing-for-fdroid.md`).
+
 ## 2. Open the RFP
 
 ```bash
 node glab-fdroid.mjs open-rfp "<App name>" rfp.md
 ```
 
-From [../templates/rfp.md](../templates/rfp.md). Note the number (`#4676`). The bot labels it within
+The live template, filled in from [../templates/rfp.md](../templates/rfp.md). Note the number (`#4676`). The bot labels it within
 minutes; if it adds `too-many-git-urls` (two GitHub links: source and mirror), post the explanation
 from [../templates/comment-too-many-git-urls.md](../templates/comment-too-many-git-urls.md):
 
@@ -85,7 +99,9 @@ Debian"`); it updates the file on the branch and the merge request's pipeline re
 node glab-fdroid.mjs open-mr <app>-fdroid-data <applicationId> "New app: <App name>" merge-request.md
 ```
 
-From [../templates/merge-request.md](../templates/merge-request.md), ending `Closes rfp#<iid>`.
+The live template, filled in from [../templates/merge-request.md](../templates/merge-request.md),
+ending `Closes rfp#<iid>` and `/label ~"New App"`. Replies to reviewers go through
+`comment-mr <mr-iid> reply.md`, which runs the same check.
 The helper sets: target `fdroid/fdroiddata` `master`, **allow commits from members who can merge**
 (reviewers fix small things themselves), delete the branch on merge, no squash, not a draft.
 

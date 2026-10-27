@@ -9,8 +9,21 @@ that are short, factual and easy to check get merged faster.
 - **English**, whatever language the owner works in. Translate for the owner if they want to read
   it first, but post English.
 - **Show the owner the exact text, then post it.** Nothing goes out under their name unseen.
-- **F-Droid's own templates, their wording kept.** Tick a box only when it is true; leave it
-  unticked with a short reason after it (`Not applicable, no external repo dependency.`).
+- **F-Droid's LIVE templates, every line kept.** Fetch the RFP and merge request templates fresh
+  with `glab-fdroid.mjs template rfp|mr` each time, and fill them in. Never reuse an old body,
+  this skill's answer sheets included. Both templates changed between Miroji (July 2026) and
+  OmniMorse (October 2026), and OmniMorse's merge request was closed with "Merge Request template
+  is not followed". Tick a box only when it is true; leave it unticked with a short reason after it
+  (`Not applicable, no external repo dependency.`). `open-rfp` and `open-mr` refuse a body that
+  drops a heading, a field or a checkbox of the live template.
+- **The app stands on its own: no other store, ever.** No F-Droid text names Apple, the App
+  Store, iOS, iPhone, iPad, TestFlight, Google Play, the Play Store or the Play Console, and none
+  links to them. That covers the RFP, the merge request, comments, replies, the recipe and the
+  Fastlane listing. That the app is published elsewhere, or how its testers were found there,
+  counts for nothing on F-Droid. On OmniMorse's RFP the reviewer deleted the App Store link line
+  from the description before the merge request was closed. Library names a reviewer needs in
+  order to verify a removal stay ("Google Play Services", "Play Install Referrer"). Every helper
+  command that posts refuses a text that names a store.
 - **Facts you checked, stated plainly.** "Built with every Expo `local-maven-repo` deleted; no
   firebase/gms/mlkit/installreferrer classes in the dex; `fdroid scanner` clean on the APK and on
   the source." Each claim traces to `local-verification.md`.
@@ -28,22 +41,28 @@ that are short, factual and easy to check get merged faster.
 
 ## The RFP
 
-From [../templates/rfp.md](../templates/rfp.md). Title: the app name alone. Body: the checklist,
-then source link, another-store link, licence, category, summary, a description paragraph, a
-paragraph on what the F-Droid build leaves out, and one line on the build mirror.
+The live template, filled in with the answers in [../templates/rfp.md](../templates/rfp.md).
+Title: the app name alone. As of October 2026 it asks for the checklist, the application ID, a
+metadata block (the recipe's fields, `Repo:` being the mirror), "Why do you want this app added
+to F-Droid", a summary and a description.
 
-- Link the store where the app is **publicly** visible. A Play listing in closed testing 404s for
-  everyone else; use the App Store link until Play is public.
-- Summary: the store's short description, ≤ 80 characters.
+- Summary: ≤ 80 characters, and never "Android", "FLOSS", "open source" or "free software"; the
+  template says so.
+- Description: no repository links ("Don't add more repo links here"). The mirror is in `Repo:`
+  and in the `too-many-git-urls` comment.
 
 ## The merge request
 
-From [../templates/merge-request.md](../templates/merge-request.md). Title `New app: <App name>`.
-Body: F-Droid's checklist, then **Notes for the reviewer** (three or four bullets: the variant, the
-anti-feature, what was verified), then `Closes rfp#<iid>` on its own line.
+The live template, filled in with the answers in
+[../templates/merge-request.md](../templates/merge-request.md). Title `New app: <App name>`. As of
+October 2026 it opens with an **Abstract**: what the app does, with screenshots, why it was
+written, and what it does that similar F-Droid apps do not. Then about 30 checkboxes under
+Policy, Docs, Merge Request Setup, Metadata and Pipeline, then `Closes rfp#<iid>` and
+`/label ~"New App"`. Add **Notes for the reviewer** after the checklist: the variant, the
+anti-feature, what was verified, in three bullets.
 
-"Builds with `fdroid build` and all pipelines pass" stays unticked when you open it: nothing has
-run on their side yet. Miroji's merge request left it unticked too.
+The pipeline boxes stay unticked when you open it: nothing has run on their side yet. Leaving
+Reproducible Builds off needs a reason; "No, I don't want this." was not one.
 
 ## Replying to a reviewer
 

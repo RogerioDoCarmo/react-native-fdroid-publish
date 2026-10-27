@@ -23,6 +23,10 @@ Two apps have been through this; every rule here comes from one of them. Read
   text posted on GitLab are shown to the owner and approved before they are sent.
 - **Credentials stay with the owner.** Tokens, keystores and logins are created and entered by the
   owner; you check for a secret by name only.
+- **The app stands on its own.** No F-Droid text, listing or recipe names another store or
+  platform (Apple, App Store, iOS, Google Play, Play Store), links to one, or leans on users
+  there. Every text that goes out starts from F-Droid's **live** template, fetched that day,
+  never from a copy ([references/writing-for-fdroid.md](references/writing-for-fdroid.md)).
 - **Prove, then claim.** Every "clean", "builds" or "no INTERNET" in a document or a GitLab text is
   backed by a check you ran ([references/local-verification.md](references/local-verification.md)).
 
@@ -35,18 +39,20 @@ it holds.
 
 Fill in the **project sheet** in [references/project-sheet.md](references/project-sheet.md):
 Expo managed or bare, SDK and React Native versions, package manager, application ID, licence,
-source repo, store links, locales, every native dependency.
+source repo, first commit date, the owner's other F-Droid apps, similar F-Droid apps, locales,
+every native dependency.
 
 **Done when** every field of the sheet has a value read from the project, not assumed.
 
 ### 2. Audit what F-Droid would reject
 
-Classify every native dependency and every network use with
-[references/inclusion-audit.md](references/inclusion-audit.md): _keep_, _patch_, _remove_, or
-_keep with an anti-feature_.
+Start with the **age gate** in [references/inclusion-audit.md](references/inclusion-audit.md):
+at least 3 months of active development, or a stated exception. Then classify every native
+dependency and every network use: _keep_, _patch_, _remove_, or _keep with an anti-feature_.
 
-**Done when** each dependency on the sheet has a class and a reason, and the owner has approved the
-list of features the F-Droid build loses.
+**Done when** the date the app turns 3 months old (or its exception, with proof) is on the sheet,
+each dependency has a class and a reason, and the owner has approved the list of features the
+F-Droid build loses.
 
 ### 3. Build the F-Droid variant (skip when nothing is removed)
 
@@ -73,7 +79,8 @@ starting from [templates/android-mirror.yml](templates/android-mirror.yml) and
 
 **Done when** a mirror run is green and a fresh clone of the mirror shows the real `versionCode`,
 `node-linker=hoisted`, `buildFromSource: [".*"]`, Fastlane metadata, and none of the removed
-packages in `package.json` or the lockfile.
+packages in `package.json` or the lockfile, and the source repository holds a generated copy of
+the same Fastlane tree, guarded by a test.
 
 ### 6. Verify locally
 
@@ -104,12 +111,15 @@ description is in the recipe, and the `scanignore` entries match the source scan
 
 Fork `fdroiddata`, open the RFP, add the recipe on a branch, open the merge request:
 [references/gitlab.md](references/gitlab.md). Write every text by
-[references/writing-for-fdroid.md](references/writing-for-fdroid.md), from
+[references/writing-for-fdroid.md](references/writing-for-fdroid.md): fetch each live template
+with `glab-fdroid.mjs template`, fill it in with the answers in
 [templates/rfp.md](templates/rfp.md) and [templates/merge-request.md](templates/merge-request.md),
-and show each one to the owner before it is posted.
+run `glab-fdroid.mjs check`, and show each one to the owner before it is posted. Open the merge
+request only once the age gate from step 2 is passed or its exception is in the body.
 
-**Done when** the merge request is open, references the RFP with `Closes rfp#N`, and allows commits
-from members who can merge.
+**Done when** the merge request is open, passed `check` against the live template on the day it
+was posted, references the RFP with `Closes rfp#N`, and allows commits from members who can
+merge.
 
 ### 10. Get the pipeline green
 

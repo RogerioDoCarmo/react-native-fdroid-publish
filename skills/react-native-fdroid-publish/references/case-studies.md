@@ -15,7 +15,8 @@ author; both use a build mirror.
 | Anti-features | none | `NonFreeNet` (platform speech recogniser) |
 | Mirror packaging | patches from `main`, Fastlane hand-written | everything from the tag, Fastlane generated, a guard step refusing proprietary references |
 | Pipeline failures | "user not verified"; JDK 21 (`jvmTarget` seds); `subdir`/`output` | CMake 3.31.6 missing (fixed with Debian's `cmake ninja-build`) |
-| Reviewer questions | summary/description in recipe; tag instead of hash; Node from Debian; JDK 21; `subdir`; category; size; usefulness; INTERNET | none at the time of writing |
+| Reviewer questions | summary/description in recipe; tag instead of hash; Node from Debian; JDK 21; `subdir`; category; size; usefulness; INTERNET | "add icon, pics, txt" (Fastlane not seen in the source repo); RFP description edited to drop the other-store link |
+| Outcome | merged at about 2½ months after the first commit | **closed** at 67 days: old MR template, under 3 months |
 
 ## Miroji's review, in order (!43165)
 
@@ -48,3 +49,14 @@ Every one of these is pre-empted in this skill's recipe template and texts.
 6. New dedicated fork; Miroji's RFP and MR re-read before posting; one gap found (worklets JDK 21
    `sed`) and closed.
 7. RFP, comment, MR. First `fdroid build` failed on CMake; fixed in one push; all 10 jobs green.
+8. On the RFP, licaon-kter deleted the description's App Store link line, unlinked the mirror URL,
+   and asked "add icon, pics, txt". fdroid-bot reported "Fastlane was not found in your repo!":
+   it had scanned the source repo, and Fastlane lived only in the mirror.
+9. linsui closed !54504 two hours after it went green: "Merge Request template is not followed"
+   and "doesn't meet the policy that it needs to be maintained for more than 3 months". The body
+   was Miroji's July checklist, and the live template had since gained an Abstract and about 30
+   boxes. The app was 67 days old. The author qualified for the "maintains other apps on F-Droid"
+   exception (Miroji), but the MR never said so.
+10. Fixes, all now in this skill: Fastlane generated into the source repo too; templates fetched
+    live and checked before posting; no other store named anywhere; the age gate checked before
+    any work starts.

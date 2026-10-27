@@ -1,15 +1,37 @@
-* [x] The app complies with the [inclusion criteria](https://f-droid.org/wiki/page/Inclusion_Policy)
-* [x] The app is not already listed in the repo or issue tracker.
-* [x] The original app author has been notified (and does not oppose the inclusion). I am the original app author.
-* [ ] [Donated](https://f-droid.org/donate/) to support the maintenance of this app in F-Droid. Optional, not done yet.
+<!--
+Answers for F-Droid's RFP template. This file is NOT the template: F-Droid
+changes theirs, and a stale copy is how an RFP goes out with lines the
+maintainers no longer ask for. Fetch the live one and fill it in:
 
-Link to the source code: https://github.com/<owner>/<app>
-Link to app in another app store: <a PUBLIC store link: App Store, or Play once it is out of closed testing>
-License used: <SPDX licence id>
-Category: <F-Droid category>
-Summary: <the store short description, at most 80 characters>
-Description: <one paragraph: what the app does, its main features, the interface languages.>
+  node scripts/glab-fdroid.mjs template rfp rfp.md
 
-<Only when the F-Droid build differs from the store build: what it leaves out and why, in one paragraph. Example: The F-Droid build has no internet permission, no crash reporting and no update checks: Firebase Crashlytics and expo-updates are removed at build time, and Google's ML Kit and Play Install Referrer are patched out of expo-camera and expo-application. Speech input uses the platform SpeechRecognizer, which on most phones is Google's online service, so the recipe declares NonFreeNet; everything else works offline.>
+Keep every line of it. Put each answer below under its matching line. A line
+with no answer here: answer it from the project sheet. An answer whose line is
+gone from the live template: drop it. Then `check rfp rfp.md` before posting.
+-->
 
-The Android build is mirrored to a self-contained, Gradle-buildable repo kept in sync with releases: https://github.com/<owner>/<app>-android (every Expo native module is compiled from source; the build needs only Node from Debian + Gradle).
+Checkboxes: tick each one only when it is true. After the "author has been notified" box, add:
+I am the original app author.
+
+APPLICATION ID: <com.example.app>
+
+Metadata block, from the recipe:
+- Categories: <the recipe's categories>
+- License: <SPDX id>
+- AuthorName / AuthorEmail: <the owner's public name and contact address>
+- SourceCode: https://github.com/<owner>/<app>
+- IssueTracker: https://github.com/<owner>/<app>/issues
+- AutoName: <App name>
+- RepoType: git
+- Repo: https://github.com/<owner>/<app>-android
+- Leave the fields with no value empty: AuthorWebSite, WebSite, Donate, Bitcoin, LiberaPay.
+
+Why do you want this app added to F-Droid: <one or two sentences on what the app is for and who
+uses it. If the F-Droid build differs from the upstream build, say what it leaves out, in one
+sentence: "The F-Droid build has no internet permission, no crash reporting and no update checks.">
+
+Summary: <at most 80 characters; never mention Android, FLOSS, open source or free software>
+
+Description: <what the app does, objectively: its main features as a short list, the interface
+languages, and which anti-feature applies and why. No repository links here: the template says
+so, and the mirror is already in Repo:.>

@@ -82,6 +82,15 @@ test every locale against them.
   falls back to `es`.
 - Copy must describe **the F-Droid build**: no crash-report switch, no store-only features, and a
   privacy paragraph that matches it. Leave out screenshots that show removed features.
+- **No field names another store or platform** (Apple, App Store, iOS, Google Play, Play Store and
+  the like; `writing-for-fdroid.md`). Make the generator refuse them, so a listing edit for
+  another store cannot leak into F-Droid's.
+- ⚠️ **Keep a copy in the source repository too.** F-Droid builds from the mirror and reads its
+  Fastlane there, but the RFP bot and the reviewers read `SourceCode`. OmniMorse's RFP got
+  "Fastlane was not found in your repo!" and "add icon, pics, txt", although the mirror had all
+  three locales. Generate the copy with the same code (OmniMorse: `node tools/fdroid-mirror.js
+  source`, for the version in `app.json`), commit it, and add a test that fails when it no longer
+  matches the listings. A version bump then has to run that command; older changelogs stay.
 
 ## The mirror repo and its token (owner's steps)
 

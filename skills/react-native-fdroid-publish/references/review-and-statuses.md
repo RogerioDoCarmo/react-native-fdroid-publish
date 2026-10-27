@@ -12,6 +12,9 @@ never have to guess whether a status means "act now".
 | Status **Done**, issue closed | a maintainer closed it when the merge request merged (Miroji: set to Done the same day `!43165` merged) | none |
 | Labels added by **fdroid-bot** (`git-url`, `gradle`, `kotlin`, `react`, `license`, `github-actions`, a local module's name...) | the bot's automatic scan of the source repo | none |
 | Label **too-many-git-urls** | the body links two git repos (source and mirror) | post the explanation comment (`writing-for-fdroid.md`) |
+| fdroid-bot: "Fastlane was not found in your repo!" | the bot scans `SourceCode`, not the mirror in `Repo:` | keep a generated copy of Fastlane in the source repo too (`build-mirror.md`) |
+| A maintainer: "add icon, pics, txt per https://gitlab.com/-/snippets/1895688" | the same: no Fastlane seen in the source repo | as above |
+| A maintainer "changed the description" | housekeeping: on OmniMorse, the App Store link line was deleted and the mirror link unlinked | take the hint: name no other store, add no repo links |
 
 ## Merge request statuses and labels
 
@@ -23,6 +26,8 @@ never have to guess whether a status means "act now".
 | "If you release a new version please update this MR" | a new upstream release must be added as a build entry | add the build entry on the same branch (`recipe.md`) |
 | A question about usefulness, size or a permission | the reviewer is deciding whether to include it | answer plainly; it is not a rejection |
 | Merged | the recipe is in fdroiddata | wait for the next F-Droid index update (a day or two) for the app to appear |
+| **Closed** with "Merge Request template is not followed." | the body was not the live template | fetch the live template, fill it in completely, open a new MR from the same branch |
+| **Closed** with "doesn't meet the policy that it needs to be maintained for more than 3 months" | quality point 6, the age gate (`inclusion-audit.md`) | open a new MR after the date, or with the exception stated beside its checkbox. The RFP stays open, the fork branch keeps the recipe, and a green build still counts. An appeal goes to team@f-droid.org |
 | Detailed merge status `mergeable` / `unchecked` | GitLab's own merge check | none; maintainers merge |
 
 ## Code Quality findings

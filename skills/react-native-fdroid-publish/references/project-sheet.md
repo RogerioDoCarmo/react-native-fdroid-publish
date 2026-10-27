@@ -18,7 +18,9 @@ anything you could not find as **unknown** and ask the owner.
 | Source repo | `git remote -v` | `https://github.com/owner/app` |
 | Issue tracker / changelog | GitHub issues and releases URLs | |
 | Author name / contact email | the owner. Use the public contact address, not a personal one | |
-| Store links | Play (public only once out of closed testing) or App Store | App Store link while Play is closed |
+| First commit | `git log --reverse --format=%ad --date=short \| head -1` | 2026-08-21: three months fall on 2026-11-21 |
+| Owner's apps already on F-Droid | `https://f-droid.org/api/v1/packages/<their other app ids>` | Miroji, `com.rogeriodocarmo.miroji`, 3 versions |
+| Similar apps on F-Droid | `https://search.f-droid.org/?q=<subject>` | Morse, SOS Flashlight, MorseLightCrypt, Morse Trainer |
 | Locales | store listing files, `i18n` folder | en-US, pt-BR, es |
 | Native dependencies | `pnpm exec expo config --type introspect`, or every `expo-*`, `react-native-*`, `@react-native-*` in `package.json` with an `android/` folder, plus local modules | |
 | Network uses | crash reporting, analytics, OTA updates, remote config, speech recognition, ads | Crashlytics, expo-updates |

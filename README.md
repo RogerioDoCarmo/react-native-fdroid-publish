@@ -8,8 +8,9 @@ RFP, the merge request, the pipeline, Code Quality findings and the reviewer's q
 
 It is distilled from two real submissions, so you don't re-learn either of them:
 [Miroji](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/43165) (merged) and
-[OmniMorse](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/54504). Every rule in it came
-from one of those two, and the skill says which.
+[OmniMorse](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/54504) (closed: an outdated
+merge request template, and an app under three months old). Every rule in it came from one of
+those two, and the skill says which.
 
 ## Install
 
@@ -56,7 +57,10 @@ project, with your approval. Specifically:
 - **`scripts/glab-fdroid.mjs`** calls `glab api` against gitlab.com with **your own** `glab` login:
   it forks `fdroid/fdroiddata`, creates a branch and the recipe file in your fork, opens the RFP,
   comments on it, opens the merge request, and reads pipeline status. It never reads, prints or
-  stores a token. Every public text is shown to you before it is posted.
+  stores a token. Every public text is shown to you before it is posted, and refused if it drops a
+  line of F-Droid's current template or names another app store.
+- **`glab-fdroid.mjs template` and `check`** download F-Droid's current RFP and merge request
+  templates from gitlab.com (public files, no login) so every text starts from the live version.
 - **`scripts/scan_source.py`** runs F-Droid's own `fdroidserver` scanner on a local directory.
   Nothing leaves your machine.
 - Read-only status checks may use `curl` against gitlab.com's public API.

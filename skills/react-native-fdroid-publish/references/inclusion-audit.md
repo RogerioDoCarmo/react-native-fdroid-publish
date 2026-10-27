@@ -5,6 +5,24 @@ find each thing in a React Native project. The policy forbids proprietary code i
 Firebase and Crashlytics outright, forbids an app downloading code outside F-Droid's review, and
 asks for a build flavour without such dependencies when upstream has them.
 
+## First: is the app old enough?
+
+Quality point 6 of the policy: the app "should have been actively developed for at least 3 months",
+unless it "has been proven to have some users", **the author has been maintaining other apps on
+F-Droid**, or it is "developed only for an event". The merge request template tells reviewers to
+"pay special attention" to it, and they do. OmniMorse's merge request was closed at 67 days, with
+its pipeline green.
+
+- Count from the first commit (project sheet). Under 3 months with no exception: do the
+  technical work now, and open the merge request only after the date.
+- An exception that applies goes **in the merge request**, beside that checkbox, with a link
+  (the author's other app's F-Droid page). OmniMorse qualified through Miroji but never said so.
+- Never argue the "some users" exception from another store's numbers: F-Droid texts name no
+  other store (`writing-for-fdroid.md`), and the app is judged on its own there.
+
+**Done when** the date the app turns 3 months old is on the project sheet, and either it has
+passed or an exception with its proof is written down.
+
 ## The four classes
 
 Give every native dependency and every network use one of these:
@@ -69,7 +87,12 @@ a function supported by the stock camera?". Have the answer ready: what the app 
 alternatives do not, and what it _cannot_ do (permissions, no network, no storage). It was merged
 after that answer.
 
+Quality point 5 asks for "some unique value", and the merge request template's Abstract asks for
+it outright ("the unique functions it provides over other similar apps in F-Droid"). Search
+`https://search.f-droid.org/?q=<subject>` before writing it, and name the closest apps.
+
 ## Done
 
-Each dependency on the project sheet has a class and a one-line reason, the network question has an
-answer, and the owner has approved what the F-Droid build loses.
+The age gate has an answer (the date, or an exception with proof). Each dependency on the project
+sheet has a class and a one-line reason. The network question has an answer. The owner has
+approved what the F-Droid build loses.
