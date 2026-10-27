@@ -1,0 +1,15 @@
+{
+  "name": "react-native-fdroid-publish",
+  "displayName": "React Native F-Droid Publish",
+  "version": "0.1.0",
+  "description": "Publish a React Native or Expo Android app on F-Droid end to end: inclusion audit, build variant, native patches, build mirror, local verification, fdroiddata recipe, and the GitLab RFP, merge request, pipeline and review.",
+  "author": {
+    "name": "Rogério do Carmo",
+    "email": "contact@rogeriodocarmo.com",
+    "url": "https://github.com/RogerioDoCarmo"
+  },
+  "homepage": "https://github.com/RogerioDoCarmo/react-native-fdroid-publish",
+  "repository": "https://github.com/RogerioDoCarmo/react-native-fdroid-publish",
+  "license": "MIT",
+  "keywords": ["f-droid", "fdroid", "react-native", "expo", "android", "fdroiddata", "gitlab", "glab", "foss"]
+}

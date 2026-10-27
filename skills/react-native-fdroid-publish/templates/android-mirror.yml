@@ -1,0 +1,172 @@
+name: Mirror Android Build
+
+# Publishes a build-only, plain-Gradle snapshot of the Android project to
+# <owner>/<app>-android on each release, for F-Droid to build from.
+# references/build-mirror.md explains every step.
+#
+# Replace: <owner>, <app>, <APP>_ANDROID_TOKEN, and the variant lines
+# (marked VARIANT) if the project has an F-Droid build variant; delete them
+# otherwise. Uses pnpm; swap the install/remove commands for npm or yarn.
+#
+# Costs nothing: GitHub-hosted Ubuntu, no binary built, nothing distributed.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to mirror (e.g. v1.2.3)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    # Plain vX.Y.Z releases mirror by themselves. A vX.Y.Z+metadata tag (a
+    # same-version re-release) would re-point the mirror's vX.Y.Z, so it is
+    # mirrored only on purpose, by dispatch.
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.release.tag_name, '+')
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+    steps:
+      - name: Checkout source at release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+          path: source
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: source/package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: source/.nvmrc
+
+      # versionCode = major*10000 + minor*100 + patch, after dropping +metadata.
+      # A -prerelease tag is refused: F-Droid would publish it as the release.
+      - name: Read the version from the tag
+        id: version
+        working-directory: source
+        run: |
+          set -euo pipefail
+          read -r NAME CODE < <(node -e '
+            const t = process.argv[1].replace(/^v/, "").replace(/\+.*$/, "");
+            const m = /^(\d+)\.(\d+)\.(\d+)$/.exec(t);
+            if (!m) { console.error(`not vMAJOR.MINOR.PATCH: ${process.argv[1]}`); process.exit(1); }
+            const [a, b, c] = m.slice(1).map(Number);
+            if (b > 99 || c > 99) { console.error("minor and patch must be below 100"); process.exit(1); }
+            console.log(t, a * 10000 + b * 100 + c);
+          ' "$TAG")
+          APP_VERSION=$(node -p "require('./app.json').expo.version")
+          if [ "$NAME" != "$APP_VERSION" ]; then
+            echo "::error::$TAG names $NAME but app.json at that tag says $APP_VERSION."
+            exit 1
+          fi
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$CODE" >> "$GITHUB_OUTPUT"
+          echo "mirror_tag=v$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        working-directory: source
+        run: pnpm install --frozen-lockfile
+
+      # VARIANT: uninstall, not just unlink, so the mirrored package.json and
+      # lockfile never name them. List them from the project's variant table.
+      - name: Remove what the F-Droid build leaves out
+        working-directory: source
+        run: pnpm remove <package> <package>
+
+      - name: Mark package.json and app.json for the F-Droid build
+        working-directory: source
+        run: |
+          node -e '
+            const fs = require("fs");
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            // Compile every Expo native module from source, not the prebuilt AARs.
+            pkg.expo ??= {}; pkg.expo.autolinking ??= {}; pkg.expo.autolinking.android ??= {};
+            pkg.expo.autolinking.android.buildFromSource = [".*"];
+            // husky and other developer hooks have no place on a build server.
+            if (pkg.scripts) delete pkg.scripts.prepare;
+            // VARIANT: carry the choice in a file; F-Droid re-runs the configs with no env.
+            pkg["<app>"] = { ...(pkg["<app>"] ?? {}), buildVariant: "fdroid" };
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
+            // Over-the-air update settings would ride along in the bundle as dead data.
+            const app = JSON.parse(fs.readFileSync("app.json", "utf8"));
+            delete app.expo.updates; delete app.expo.runtimeVersion;
+            fs.writeFileSync("app.json", JSON.stringify(app, null, 2) + "\n");
+          '
+
+      - name: Generate the Android project
+        working-directory: source
+        env:
+          <APP>_BUILD_VARIANT: fdroid # VARIANT
+        run: pnpm exec expo prebuild --platform android --no-install
+
+      # A guard, not a hope: nothing is pushed if any of these reached the project.
+      - name: Refuse a project that still references proprietary code
+        working-directory: source
+        run: |
+          set -euo pipefail
+          if grep -rniE 'firebase|crashlytics|com\.google\.android\.gms|google-services|expo\.modules\.updates|installreferrer|mlkit' \
+              android --include='*.gradle' --include='*.kts' --include='*.xml' --include='*.properties' --include='*.kt' --include='*.java'; then
+            echo "::error::The generated Android project references proprietary code. See the lines above."
+            exit 1
+          fi
+          if grep -nE 'react-native-firebase|expo-updates@' pnpm-lock.yaml; then
+            echo "::error::The lockfile still names an excluded package."
+            exit 1
+          fi
+
+      - name: Assemble build-only snapshot
+        run: |
+          set -euo pipefail
+          bash source/tools/assemble-mirror.sh source mirror \
+            "${{ steps.version.outputs.code }}" "${{ steps.version.outputs.name }}"
+
+      - name: Checkout the mirror repository
+        uses: actions/checkout@v4
+        with:
+          repository: <owner>/<app>-android
+          token: ${{ secrets.<APP>_ANDROID_TOKEN }}
+          path: dest
+
+      # README.md and .gitignore belong to the mirror. Old changelogs stay:
+      # F-Droid keeps showing them for the versions they describe.
+      - name: Sync snapshot into the mirror
+        run: |
+          set -euo pipefail
+          rsync -a --delete \
+            --exclude='.git' --exclude='README.md' --exclude='.gitignore' \
+            --exclude='fastlane/metadata/android/*/changelogs/' \
+            mirror/ dest/
+          if [ -d mirror/fastlane ]; then rsync -a mirror/fastlane/ dest/fastlane/; fi
+
+      - name: Commit, tag and push
+        working-directory: dest
+        env:
+          MIRROR_TAG: ${{ steps.version.outputs.mirror_tag }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to mirror for $TAG"
+            exit 0
+          fi
+          git commit -m "Mirror $TAG from <app>"
+          git tag -f "$MIRROR_TAG"
+          git push origin HEAD:main
+          git push origin "$MIRROR_TAG" --force
+          {
+            echo "### Mirrored $TAG as $MIRROR_TAG"
+            echo
+            echo "Commit for the F-Droid recipe: \`$(git rev-parse HEAD)\`"
+          } >> "$GITHUB_STEP_SUMMARY"

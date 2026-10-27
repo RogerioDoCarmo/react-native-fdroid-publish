@@ -1,0 +1,5 @@
+node_modules/
+.fdsvenv/
+*.apk
+*.log
+__pycache__/

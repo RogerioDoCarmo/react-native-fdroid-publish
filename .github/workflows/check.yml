@@ -1,0 +1,35 @@
+name: Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Skill and manifest checks
+        run: node scripts/check.mjs
+      - name: Scripts parse
+        run: |
+          node --check skills/react-native-fdroid-publish/scripts/glab-fdroid.mjs
+          python3 -m py_compile skills/react-native-fdroid-publish/scripts/scan_source.py
+          bash -n skills/react-native-fdroid-publish/templates/assemble-mirror.sh
+      - name: Templates parse as YAML
+        run: |
+          python3 - <<'PY'
+          import yaml, sys
+          for f in ["skills/react-native-fdroid-publish/templates/recipe.yml",
+                    "skills/react-native-fdroid-publish/templates/android-mirror.yml",
+                    ".github/workflows/check.yml"]:
+              yaml.safe_load(open(f, encoding="utf-8"))
+              print("ok", f)
+          PY

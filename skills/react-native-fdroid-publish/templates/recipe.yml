@@ -1,0 +1,59 @@
+# fdroiddata metadata/<applicationId>.yml for an Expo / React Native app built
+# from a build mirror. Replace every <placeholder>, delete what does not apply,
+# and REMOVE ALL COMMENTS before submitting: F-Droid's own templates ask for it,
+# and the `fdroid rewritemeta` job checks the file is in canonical form.
+# references/recipe.md explains each line.
+AntiFeatures:
+  NonFreeNet:
+    en-US: <e.g. Speech input uses the device's own speech recogniser. On most phones
+      that is Google's, which may send the audio to Google to transcribe. Everything
+      else works offline; the app itself has no internet permission.>
+Categories:
+  - <Category from config/categories.yml>
+License: <SPDX licence id, e.g. MIT>
+AuthorName: <Owner name>
+AuthorEmail: <public contact address>
+SourceCode: https://github.com/<owner>/<app>
+IssueTracker: https://github.com/<owner>/<app>/issues
+Changelog: https://github.com/<owner>/<app>/releases
+
+AutoName: <App name>
+
+RepoType: git
+Repo: https://github.com/<owner>/<app>-android.git
+
+Builds:
+  - versionName: <X.Y.Z>
+    versionCode: <major*10000+minor*100+patch>
+    commit: <full 40-character mirror commit hash>
+    subdir: android/app
+    sudo:
+      - apt-get update
+      - apt-get install -y nodejs npm cmake ninja-build
+      - npm install -g pnpm@<version>
+    init:
+      - cd ../..
+      - pnpm install --frozen-lockfile --prod
+      - patch -p1 -d node_modules/expo-camera/android < patches/expo-camera-remove-google-mlkit.patch
+    gradle:
+      - yes
+    prebuild:
+      - cd ../..
+      - sed -i '/jvmToolchain\|JavaVersion/s/17/21/' node_modules/@react-native/gradle-plugin/*/build.gradle.kts
+        node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/utils/JdkConfiguratorUtils.kt
+      - sed -i '/jvmTarget\|JavaVersion/s/17/21/' node_modules/react-native-worklets/android/build.gradle.kts
+      - sed -i 's/^reactNativeArchitectures=.*/reactNativeArchitectures=armeabi-v7a,arm64-v8a/'
+        android/gradle.properties
+      - sed -i 's/^expo.useLegacyPackaging=.*/expo.useLegacyPackaging=true/' android/gradle.properties
+    scanignore:
+      - node_modules/hermes-compiler/hermesc/linux64-bin
+      - node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle
+      - node_modules/react-native/ReactAndroid/publish.gradle
+    scandelete:
+      - node_modules
+    ndk: 27.1.12297006
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: <X.Y.Z>
+CurrentVersionCode: <versionCode>

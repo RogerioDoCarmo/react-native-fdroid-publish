@@ -1,0 +1,16 @@
+{
+  "name": "rogeriodocarmo",
+  "description": "Rogério do Carmo's agent skills: publishing React Native apps on F-Droid.",
+  "owner": {
+    "name": "Rogério do Carmo",
+    "email": "contact@rogeriodocarmo.com"
+  },
+  "plugins": [
+    {
+      "name": "react-native-fdroid-publish",
+      "source": "./",
+      "description": "Publish a React Native or Expo Android app on F-Droid end to end, GitLab submission and review included.",
+      "version": "0.1.0"
+    }
+  ]
+}
