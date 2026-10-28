@@ -8,9 +8,10 @@
 //   - no package launcher (npx, bunx, pnpm dlx, yarn dlx, uvx) in skill files,
 //     which the Claude plugin directory treats as an unpinned download;
 //   - no other store or platform named in templates/, the texts that reach
-//     F-Droid (the same rule glab-fdroid.mjs applies before posting).
+//     F-Droid (the rule in text-guards.mjs, which glab-fdroid.mjs applies before posting).
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
+import { OTHER_STORES } from '../skills/react-native-fdroid-publish/scripts/text-guards.mjs';
 
 const root = resolve(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')), '..');
 const problems = [];
@@ -67,8 +68,6 @@ for (const file of files.filter((f) => f.includes(`${sep}skills${sep}`))) {
   if (launcher) fail(file, `uses the package launcher "${launcher[2]}"`);
 }
 
-const OTHER_STORES =
-  /\b(?:Apple|App Store|iPhone|iPad|iOS|TestFlight|Google Play(?! Services)|Play Store|Play Console)\b|apps\.apple\.com|play\.google\.com/iu;
 for (const file of files.filter((f) => f.includes(`${sep}templates${sep}`))) {
   const store = OTHER_STORES.exec(readFileSync(file, 'utf8'));
   if (store) fail(file, `names "${store[0]}"; F-Droid texts never name another store`);

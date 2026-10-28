@@ -10,7 +10,7 @@
       "name": "react-native-fdroid-publish",
       "source": "./",
       "description": "Publish a React Native or Expo Android app on F-Droid end to end, GitLab submission and review included.",
-      "version": "0.2.0"
+      "version": "0.2.1"
     }
   ]
 }

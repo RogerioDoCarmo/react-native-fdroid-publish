@@ -18,6 +18,8 @@ jobs:
           node-version: 22
       - name: Skill and manifest checks
         run: node scripts/check.mjs
+      - name: Guard tests
+        run: node --test test/*.test.mjs
       - name: Scripts parse
         run: |
           node --check skills/react-native-fdroid-publish/scripts/glab-fdroid.mjs
