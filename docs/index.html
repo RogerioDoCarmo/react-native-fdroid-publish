@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>react-native-fdroid-publish — an agent skill for F-Droid</title>
+<meta name="description" content="An agent skill that takes a React Native or Expo Android app onto F-Droid: audit, build variant, build mirror, recipe, and the GitLab review." />
+<link rel="canonical" href="https://rogeriodocarmo.github.io/react-native-fdroid-publish/" />
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #5a5a5a;
+    --accent: #1b7a4b;
+    --card-bg: #f6f8fa;
+    --border: #e3e6ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1115;
+      --fg: #f2f2f2;
+      --muted: #a0a0a0;
+      --accent: #4cc38a;
+      --card-bg: #171a20;
+      --border: #262a32;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 24px 48px;
+  }
+  header {
+    border-bottom: 4px solid var(--accent);
+    padding-bottom: 20px;
+    margin-bottom: 8px;
+  }
+  h1 { font-size: 1.9rem; margin: 0 0 6px; overflow-wrap: anywhere; }
+  .tagline { color: var(--muted); margin: 0; }
+  .buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .buttons a {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .buttons a.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .buttons a:hover { border-color: var(--accent); }
+  h2 { margin: 40px 0 12px; font-size: 1.15rem; }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+  .card h3 { margin: 0 0 6px; font-size: 1rem; }
+  .card p { margin: 0 0 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); }
+  ol { margin: 0; padding-left: 1.4rem; }
+  li { margin-bottom: 4px; }
+  pre {
+    margin: 0 0 8px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 0.85rem;
+  }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  footer a { color: inherit; margin-right: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>react-native-fdroid-publish</h1>
+    <p class="tagline">An agent skill that takes a React Native or Expo Android app all the way onto F-Droid.</p>
+    <div class="buttons">
+      <a class="primary" href="https://github.com/RogerioDoCarmo/react-native-fdroid-publish">Source on GitHub</a>
+      <a href="https://github.com/RogerioDoCarmo/react-native-fdroid-publish#install">Install</a>
+      <a href="https://github.com/RogerioDoCarmo/react-native-fdroid-publish/releases">Releases</a>
+    </div>
+  </header>
+
+  <h2>What it does</h2>
+  <div class="card">
+    <p>Audits what F-Droid would reject, builds an F-Droid variant, patches Google libraries out of Expo modules, sets up the build mirror F-Droid compiles from, verifies the build locally, writes the <code>fdroiddata</code> recipe, and handles the GitLab side: the RFP, the merge request, the pipeline, Code Quality findings and the reviewer's questions.</p>
+    <p>It is distilled from two real submissions: <a href="https://gitlab.com/fdroid/fdroiddata/-/merge_requests/43165">Miroji</a> (merged) and <a href="https://gitlab.com/fdroid/fdroiddata/-/merge_requests/54504">OmniMorse</a> (closed, with the reasons recorded). Every rule in it came from one of those two, and the skill says which.</p>
+  </div>
+
+  <h2>The twelve steps</h2>
+  <div class="card">
+    <ol>
+      <li>Survey the project</li>
+      <li>Audit what F-Droid would reject</li>
+      <li>Build the F-Droid variant</li>
+      <li>Patch what cannot be removed</li>
+      <li>Set up the build mirror</li>
+      <li>Verify locally</li>
+      <li>Put a test build on a real phone</li>
+      <li>Write the recipe</li>
+      <li>Submit on GitLab</li>
+      <li>Get the pipeline green</li>
+      <li>Go through review</li>
+      <li>After it is published</li>
+    </ol>
+  </div>
+
+  <h2>Install</h2>
+  <div class="card">
+    <h3>Any agent that reads the Agent Skills format</h3>
+    <pre><code>npx skills add RogerioDoCarmo/react-native-fdroid-publish</code></pre>
+    <h3>Claude Code, as a plugin</h3>
+    <pre><code>/plugin marketplace add RogerioDoCarmo/react-native-fdroid-publish
+/plugin install react-native-fdroid-publish@rogeriodocarmo</code></pre>
+    <p>Then ask your agent: “publish this app on F-Droid”, or “why did the F-Droid pipeline fail?”.</p>
+  </div>
+
+  <h2>What it runs and sends</h2>
+  <div class="card">
+    <p>The skill is instructions and templates; your agent runs the commands it describes, in your project, with your approval. The GitLab script uses your own <code>glab</code> login and never reads, prints or stores a token. Every public text is shown to you before it is posted, and refused if it drops a line of F-Droid's current template or names another app store. Nothing is sent anywhere else.</p>
+  </div>
+
+  <footer>
+    <a href="https://github.com/RogerioDoCarmo/react-native-fdroid-publish/blob/main/LICENSE">MIT License</a>
+    <a href="https://rogeriodocarmo.com/en/">rogeriodocarmo.com</a>
+    <a href="https://github.com/RogerioDoCarmo">GitHub</a>
+    <a href="mailto:contact@rogeriodocarmo.com">contact@rogeriodocarmo.com</a>
+    <div>© 2026 Rogério do Carmo</div>
+  </footer>
+</main>
+</body>
+</html>
