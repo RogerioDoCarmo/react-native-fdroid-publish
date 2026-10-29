@@ -12,6 +12,8 @@ It is distilled from two real submissions, so you don't re-learn either of them:
 merge request template, and an app under three months old). Every rule in it came from one of
 those two, and the skill says which.
 
+Page: <https://rogeriodocarmo.github.io/react-native-fdroid-publish/>
+
 ## Install
 
 Works with any agent that reads the [Agent Skills](https://agentskills.io) format (`SKILL.md`):
