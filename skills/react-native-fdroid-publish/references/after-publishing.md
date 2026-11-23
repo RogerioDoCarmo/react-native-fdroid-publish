@@ -6,7 +6,9 @@
   update. Check it loads before announcing anything.
 - **Privacy policy**: add a short F-Droid section to the published policy and to `PRIVACY.md` in
   the same commit: that build has no crash reporting, no update checks, no internet permission (if
-  stripped), and where any anti-feature's data goes (speech to the device's recogniser). Keep the
+  stripped), and where any data that leaves the phone goes (speech to the recogniser the user
+  selected). Name an anti-feature only if the **merged** recipe declares one: reviewers remove
+  them, and OmniMorse's policy had to be corrected after it claimed `NonFreeNet`. Keep the
   store sections as they are; the store build still does what they say.
 - **Badges**: the F-Droid badge in the mirror's README and the project's README, linking to the
   package page. Official badge: `https://f-droid.org/badge/get-it-on.png`.

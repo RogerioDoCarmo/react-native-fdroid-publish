@@ -8,15 +8,15 @@ author; both use a build mirror.
 | What it is | front-camera mirror | Morse translator: sound, torch, screen, vibration; tap decoder; speech input; 3 languages |
 | Expo SDK / React Native | 54 / 0.81 | 57 / 0.86 |
 | Source / mirror | [mirror_app](https://github.com/RogerioDoCarmo/mirror_app) / [mirror_app-android](https://github.com/RogerioDoCarmo/mirror_app-android) | [morse_app](https://github.com/RogerioDoCarmo/morse_app) / [morse_app-android](https://github.com/RogerioDoCarmo/morse_app-android) |
-| RFP / merge request | [rfp#4133](https://gitlab.com/fdroid/rfp/-/issues/4133) / [!43165](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/43165) (merged 2 Aug 2026) | [rfp#4676](https://gitlab.com/fdroid/rfp/-/issues/4676) / [!54504](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/54504) |
+| RFP / merge request | [rfp#4133](https://gitlab.com/fdroid/rfp/-/issues/4133) / [!43165](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/43165) (merged 2 Aug 2026) | [rfp#4676](https://gitlab.com/fdroid/rfp/-/issues/4676) / [!54504](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/54504) (closed), then [!57837](https://gitlab.com/fdroid/fdroiddata/-/merge_requests/57837) |
 | What F-Droid would reject | ML Kit inside `expo-camera`; an unused `INTERNET` | Firebase Crashlytics, `expo-updates`, ML Kit, Play Install Referrer |
 | Build variant | none needed | `store` / `fdroid`, one table |
 | Patches | expo-camera (ML Kit) | expo-camera (rebuilt for SDK 57), expo-application (Install Referrer) |
-| Anti-features | none | `NonFreeNet` (platform speech recogniser) |
+| Anti-features | none | `NonFreeNet` for the platform speech recogniser, dropped at review in !57837 once speech worked with any recogniser |
 | Mirror packaging | patches from `main`, Fastlane hand-written | everything from the tag, Fastlane generated, a guard step refusing proprietary references |
 | Pipeline failures | "user not verified"; JDK 21 (`jvmTarget` seds); `subdir`/`output` | CMake 3.31.6 missing (fixed with Debian's `cmake ninja-build`) |
-| Reviewer questions | summary/description in recipe; tag instead of hash; Node from Debian; JDK 21; `subdir`; category; size; usefulness; INTERNET | "add icon, pics, txt" (Fastlane not seen in the source repo); RFP description edited to drop the other-store link |
-| Outcome | merged at about 2½ months after the first commit | **closed** at 67 days: old MR template, under 3 months |
+| Reviewer questions | summary/description in recipe; tag instead of hash; Node from Debian; JDK 21; `subdir`; category; size; usefulness; INTERNET | "add icon, pics, txt" (Fastlane not seen in the source repo); RFP description edited to drop the other-store link; on !57837, "Squash commits", a suggestion deleting `NonFreeNet`, and "Can it work with other speech recognise apps?" (it could not on a de-Googled phone: a bug, fixed upstream) |
+| Outcome | merged at about 2½ months after the first commit | **closed** at 67 days: old MR template, under 3 months; reopened as !57837 with the live template after the 3 months |
 
 ## Miroji's review, in order (!43165)
 

@@ -61,6 +61,14 @@ test('each kind of missing line is reported', () => {
   assert.deepEqual(templateGaps(template, filled.replace('/label ~"New App"', '')), ['/label ~"New App"']);
 });
 
+test('an existing MR body may lack the quick action GitLab already ran', () => {
+  const stored = filled.replace('/label ~"New App"', '');
+  assert.deepEqual(templateGaps(template, stored, { quickActions: false }), []);
+  assert.deepEqual(templateGaps(template, stored.replace('## Abstract', ''), { quickActions: false }), [
+    '## Abstract',
+  ]);
+});
+
 test('Closes rfp# needs a number', () => {
   assert.deepEqual(templateGaps(template, filled.replace('rfp#4676', 'rfp#')), ['Closes rfp#']);
   assert.deepEqual(templateGaps(template, filled.replace('Closes rfp#4676', 'Closes rfp#4676 and more')), ['Closes rfp#']);

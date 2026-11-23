@@ -48,10 +48,10 @@ Added after the checklist, before the `---` line. Three bullets at most:
   removes <X> and <Y> (code, native modules and manifest entries), patches <Z> out of <module>,
   and drops `INTERNET`. The mirror workflow refuses to push a project that still references any
   of them.
-- Each anti-feature, why, and the easy way out. Example: "NonFreeNet: speech input calls the
-  platform `SpeechRecognizer`, which on most phones is an online service. The app works fully
-  without it. If you consider it a non-free dependency instead, it is a single build switch to
-  remove it, and that state is already tested."
+- Each anti-feature, why, and the easy way out, or why a feature that reaches the network has
+  none. Example: "Speech input uses whichever recogniser is selected in the system settings, so
+  it declares no anti-feature; tested with a FOSS recogniser on a phone without Google's services.
+  If you would rather drop it, it is a single build switch, and that state is already tested."
 - What was verified. Example: "Built with every Expo `local-maven-repo` deleted, no
   firebase/gms/mlkit/installreferrer classes in the dex, `fdroid scanner` clean on the APK and
   on the source with the recipe's scan lists."

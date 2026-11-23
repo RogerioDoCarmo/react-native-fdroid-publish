@@ -103,7 +103,24 @@ The live template, filled in from [../templates/merge-request.md](../templates/m
 ending `Closes rfp#<iid>` and `/label ~"New App"`. Replies to reviewers go through
 `comment-mr <mr-iid> reply.md`, which runs the same check.
 The helper sets: target `fdroid/fdroiddata` `master`, **allow commits from members who can merge**
-(reviewers fix small things themselves), delete the branch on merge, no squash, not a draft.
+(reviewers fix small things themselves), delete the branch on merge, **squash commits** (OmniMorse's
+reviewer asked for it), not a draft.
+
+### Editing the description later
+
+A new version, a dropped anti-feature or a reviewer's question can make the description wrong.
+Edit it in two steps, so a reviewer's own edit in between is never overwritten:
+
+```bash
+node glab-fdroid.mjs show-mr <mr-iid> old.md      # exactly as GitLab stores it
+cp old.md new.md                                  # edit new.md, show the owner the diff
+node glab-fdroid.mjs describe-mr <mr-iid> old.md new.md
+```
+
+`describe-mr` refuses if the live description no longer equals `old.md`, and checks `new.md` like
+any other body, except for `/label ~"New App"`: GitLab ran that quick action when the merge request
+opened and removed the line, so its absence is expected (`check mr-edit new.md` runs the same
+check). Answer the reviewer in a comment too: a description edit sends no notification.
 
 ## 5. Watch the pipeline
 

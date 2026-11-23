@@ -23,6 +23,9 @@ never have to guess whether a status means "act now".
 | Pipeline green, no comments | waiting in the review queue | none; days to weeks |
 | Reviewer comments | change requests, usually small | fix on the branch, reply (`writing-for-fdroid.md`) |
 | Label **review-requested**, "This MR is mostly ready. We'll test it later..." | accepted in principle; queued for a maintainer to test the build | none. Miroji waited about two weeks from this to merge |
+| "Please enable Squash commits" | fdroiddata wants one commit per recipe change | tick **Squash commits when merge request is accepted** in the merge request's Edit page; `open-mr` sets it already |
+| A **suggestion** block on the recipe | the reviewer proposes an exact edit | either click **Apply suggestion** or push the same change with `put-recipe`, never both. A push that touches those lines marks the thread outdated and resolves it; reply inside it anyway, so the reviewer sees the answer |
+| "Can it work with other speech recognise apps?" | the reviewer doubts an anti-feature, or the app's independence from Google | test it with a FOSS recogniser on a phone without Google's services (`inclusion-audit.md`); answer with the result, not the theory |
 | "If you release a new version please update this MR" | a new upstream release must be added as a build entry | add the build entry on the same branch (`recipe.md`) |
 | A question about usefulness, size or a permission | the reviewer is deciding whether to include it | answer plainly; it is not a rejection |
 | Merged | the recipe is in fdroiddata | wait for the next F-Droid index update (a day or two) for the app to appear |
