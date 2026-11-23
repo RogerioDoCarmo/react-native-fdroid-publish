@@ -7,7 +7,9 @@ export const OTHER_STORES =
 
 // The lines of a live template a filled-in body must still carry: headings,
 // field labels, every checkbox's wording, the label command and Closes rfp#N.
-export function templateGaps(template, body) {
+// When editing an existing merge request, pass { quickActions: false }: GitLab
+// ran `/label ...` when the MR opened and removed the line from the stored body.
+export function templateGaps(template, body, { quickActions = true } = {}) {
   const lines = body.split('\n').map((line) => line.trim());
   const gaps = [];
   for (const raw of template.split('\n')) {
@@ -18,7 +20,7 @@ export function templateGaps(template, body) {
     } else if (line.startsWith('Closes rfp#')) {
       if (!/^Closes rfp#\d+$/mu.test(body)) gaps.push(line);
     } else if (line.startsWith('/label ')) {
-      if (!lines.includes(line)) gaps.push(line);
+      if (quickActions && !lines.includes(line)) gaps.push(line);
     } else {
       const head = /^#{2,4} [^:]*:?/u.exec(line)?.[0] ?? /^[A-Z][^:]{1,60}:(?=\s*$)/u.exec(line)?.[0];
       if (head && !lines.some((l) => l.startsWith(head))) gaps.push(line);

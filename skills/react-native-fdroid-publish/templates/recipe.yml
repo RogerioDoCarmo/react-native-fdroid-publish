@@ -5,9 +5,10 @@
 # references/recipe.md explains each line.
 AntiFeatures:
   NonFreeNet:
-    en-US: <e.g. Speech input uses the device's own speech recogniser. On most phones
-      that is Google's, which may send the audio to Google to transcribe. Everything
-      else works offline; the app itself has no internet permission.>
+    en-US: <only if the audit found one; delete the block otherwise. Speech input through
+      the recogniser the user selects needs none (references/inclusion-audit.md). e.g.
+      Song lookup sends the title to a proprietary online service. Everything else works
+      offline; the app itself has no internet permission.>
 Categories:
   - <Category from config/categories.yml>
 License: <SPDX licence id, e.g. MIT>

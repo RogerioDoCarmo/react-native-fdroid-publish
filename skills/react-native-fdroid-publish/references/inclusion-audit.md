@@ -32,7 +32,7 @@ Give every native dependency and every network use one of these:
 | **keep** | FOSS all the way down | `expo-audio` → AndroidX Media3 (Apache-2.0) |
 | **patch** | FOSS module that links a Google library you do not use | `expo-camera` → ML Kit; `expo-application` → Play Install Referrer |
 | **remove** | proprietary or code-downloading, and the app can live without it | Firebase Crashlytics, `expo-updates`, analytics, ads |
-| **keep + anti-feature** | FOSS code that reaches a non-free network service the user may choose | platform `SpeechRecognizer` → `NonFreeNet` |
+| **keep + anti-feature** | FOSS code that depends on a particular non-free network service | a hard-coded proprietary online API → `NonFreeNet` |
 
 ## What to look for
 
@@ -71,14 +71,37 @@ permissions` on the release APK, not by reading the manifest: the main manifest 
 
 ## Anti-features
 
-Declare one when FOSS code reaches a non-free service the user can avoid; it is a label, not a
-rejection. `NonFreeNet` is the usual one for React Native: speech recognition through the platform
-`SpeechRecognizer`, which on most phones is Google's online service. Precedent in fdroiddata:
-`com.omiyawaki.osrswiki` ("SpeechRecognizer is optional platform API; not a proprietary
-dependency"). `NonFreeDep` is wrong when the feature does not _require_ non-free software and the
-app is fully usable without it.
+Declare one when FOSS code depends on a particular non-free service the user can avoid; it is a
+label, not a rejection. `NonFreeDep` is wrong when the feature does not _require_ non-free software
+and the app is fully usable without it.
 
 Keep such a feature behind its own switch, so a reviewer who disagrees costs a one-word edit.
+
+### Speech recognition usually needs none
+
+The platform `SpeechRecognizer` is an API, not a service. Created with no component
+(`SpeechRecognizer.createSpeechRecognizer(context)`, which `expo-speech-recognition` does), it binds
+to whichever recogniser the user picked in the system settings: Google's on most phones, a FOSS or
+on-device one on many F-Droid users' phones. The app then depends on no particular service, and
+the user chooses who hears the audio. OmniMorse declared `NonFreeNet` for this (after
+`com.omiyawaki.osrswiki`'s precedent, "Voice search uses the platform SpeechRecognizer, often
+Google online"), and its reviewer suggested dropping it and asked "Can it work with other speech
+recognise apps?". The recipe dropped it, with the pipeline still green.
+
+⚠️ **That answer is only true if the availability check is too.** OmniMorse's was not: listening
+already used the chosen recogniser, but before listening the app asked
+`ExpoSpeechRecognitionModule.getSupportedLocales()`, which on Android 13+ queries the **on-device**
+recogniser (absent without Google's services) and on Android 12 and older is always empty. A
+de-Googled phone with a working recogniser was told speech input was unavailable, without trying.
+On Android, ask only `isRecognitionAvailable()` (is any recogniser installed?) and let `start()`
+report a language the chosen one lacks (`language-not-supported`). Keep the locale list for iOS.
+
+Before writing the merge request, check on a phone or emulator **without Google's services**:
+install a FOSS recogniser from F-Droid, select it under the system's voice-input settings, and
+dictate. If that works, declare no anti-feature, and say in the merge request notes that speech
+uses whichever recogniser the user selects. Declare `NonFreeNet` only if the app names a
+proprietary recogniser itself (a `component`, a Google package in the intent, or an on-device
+requirement) and cannot work with any other.
 
 ## Usefulness
 

@@ -11,6 +11,8 @@
 //   node glab-fdroid.mjs comment-rfp <rfp-iid> <comment.md>
 //   node glab-fdroid.mjs comment-mr <mr-iid> <comment.md>
 //   node glab-fdroid.mjs open-mr <fork-name> <appId> <title> <body.md>
+//   node glab-fdroid.mjs show-mr <mr-iid> <out.md>               the MR description as GitLab stores it
+//   node glab-fdroid.mjs describe-mr <mr-iid> <old.md> <new.md>  replace it, only if it still equals old.md
 //   node glab-fdroid.mjs status <fork-name> <mr-iid>            pipeline jobs, MR state, labels
 //
 // Every write prints what it did and stops at the first failure. Request bodies
@@ -75,8 +77,11 @@ async function refusals(kind, body) {
   const store = OTHER_STORES.exec(body);
   if (store) problems.push(`names "${store[0]}": F-Droid texts never name another store or platform`);
   if (kind !== 'text') {
-    for (const gap of templateGaps(await liveTemplate(kind), body)) {
-      problems.push(`leaves out this line of the live ${kind} template: ${gap}`);
+    // 'mr-edit' is an open MR's body: the live MR template, minus the quick
+    // actions GitLab ran when it opened.
+    const template = await liveTemplate(kind === 'mr-edit' ? 'mr' : kind);
+    for (const gap of templateGaps(template, body, { quickActions: kind !== 'mr-edit' })) {
+      problems.push(`leaves out this line of the live ${kind === 'rfp' ? 'rfp' : 'mr'} template: ${gap}`);
     }
   }
   return problems;
@@ -200,9 +205,29 @@ const commands = {
       description: text(bodyFile),
       allow_collaboration: true,
       remove_source_branch: true,
-      squash: false,
+      // fdroiddata wants one commit per recipe change; a reviewer asked for it on OmniMorse.
+      squash: true,
     });
-    console.log(`MR !${mr.iid}  ${mr.web_url}  allow_collaboration=${mr.allow_collaboration}`);
+    console.log(`MR !${mr.iid}  ${mr.web_url}  allow_collaboration=${mr.allow_collaboration} squash=${mr.squash}`);
+  },
+
+  'show-mr'(iid, out) {
+    const mr = glab([`projects/${FDROIDDATA}/merge_requests/${iid}`]);
+    writeFileSync(out, mr.description, 'utf8');
+    console.log(`!${iid} description (${mr.description.length} characters) written to ${out}`);
+  },
+
+  async 'describe-mr'(iid, oldFile, newFile) {
+    await guard('mr-edit', newFile);
+    const api = `projects/${FDROIDDATA}/merge_requests/${iid}`;
+    // Compared exactly as GitLab stores it: a reviewer may have edited the
+    // description since it was saved, and their edit must not be overwritten.
+    const live = glab([api]).description;
+    if (live !== readFileSync(oldFile, 'utf8')) {
+      throw new Error(`!${iid}'s description is no longer ${oldFile}; run show-mr again and redo the edit`);
+    }
+    const mr = glab(['--method', 'PUT', api], { description: text(newFile) });
+    console.log(`!${iid} description replaced (${live.length} -> ${mr.description.length} characters)`);
   },
 
   status(name, iid) {
